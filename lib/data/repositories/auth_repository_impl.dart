@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:libras4j/data/mappers/create_account_request.dart';
 import 'package:libras4j/data/mappers/login_request.dart';
@@ -11,8 +13,15 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<DioException, UserModel>> login(
       LoginRequest loginRequest) async {
+    // Suas credenciais de autenticação
+    String username = 'myappname123';
+    String password = 'myappsecret123';
+
+    // Encode as credenciais em base64
+    String basicAuth =
+        'Basic ${base64Encode(utf8.encode('$username:$password'))}';
     _dio.options.contentType = Headers.formUrlEncodedContentType;
-    final formData = FormData.fromMap(loginRequest.toJson());
+    _dio.options.headers['Authorization'] = basicAuth;
     try {
       final response = await _dio.post(
         'http://100.26.175.74:8765/hr-oauth/oauth/token',
@@ -31,7 +40,7 @@ class AuthRepositoryImpl implements AuthRepository {
       CreateAccountRequest createAccountRequest) async {
     try {
       final response = await _dio.post(
-        'https://api.exemplo.com/login',
+        'http://100.26.175.74:7777/users',
         data: createAccountRequest.toJson(),
       );
 

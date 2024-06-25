@@ -6,15 +6,22 @@ import 'package:libras4j/consts/colors.dart';
 import 'package:libras4j/consts/styles.dart';
 import 'package:libras4j/data/mappers/login_request.dart';
 
-import 'package:libras4j/locator.dart';
+import 'package:libras4j/locator.dart' as locator;
 import 'package:libras4j/presentation/pages/home/home_page.dart';
 import 'package:libras4j/presentation/pages/register/register_page.dart';
 
-class LoginScreen extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class LoginScreen extends StatefulWidget {
+  final AuthCubit authCubit;
+  const LoginScreen({super.key, required this.authCubit});
 
-  LoginScreen({super.key});
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +70,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: BlocConsumer<AuthCubit, AuthState>(
-                bloc: getIt<AuthCubit>(),
+                bloc: widget.authCubit,
                 listener: (context, state) async {
                   if (state is AuthSuccess) {
                     Navigator.push(
@@ -82,9 +89,9 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () {
                       final email = _emailController.text;
                       final password = _passwordController.text;
-                      getIt<AuthCubit>().login(
+                      widget.authCubit.login(
                           loginRequest: LoginRequest(
-                              email: email,
+                              username: email,
                               password: password,
                               grantType: "password"));
                     },
@@ -118,7 +125,10 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                    MaterialPageRoute(
+                        builder: (context) => RegisterPage(
+                              createAccountCubit: locator.getIt(),
+                            )),
                   );
                 },
                 child: Text(

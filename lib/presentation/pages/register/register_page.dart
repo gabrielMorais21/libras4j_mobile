@@ -6,15 +6,23 @@ import 'package:libras4j/bloc/create_account/create_account_state.dart';
 import 'package:libras4j/consts/colors.dart';
 import 'package:libras4j/consts/styles.dart';
 import 'package:libras4j/data/mappers/create_account_request.dart';
-import 'package:libras4j/locator.dart';
+import 'package:libras4j/locator.dart' as locator;
 import 'package:libras4j/presentation/pages/login/login_page.dart';
 
-class RegisterPage extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class RegisterPage extends StatefulWidget {
+  final CreateAccountCubit createAccountCubit;
+  const RegisterPage({super.key, required this.createAccountCubit});
 
-  RegisterPage({super.key});
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _emailController = TextEditingController();
+
+  final TextEditingController _nameController = TextEditingController();
+
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +39,7 @@ class RegisterPage extends StatelessWidget {
               height: 100,
             ),
             TextField(
-              controller: _emailController,
+              controller: _nameController,
               decoration: const InputDecoration(
                   labelText: 'Nome:', labelStyle: AppStyles.bodySmallBold),
             ),
@@ -46,18 +54,22 @@ class RegisterPage extends StatelessWidget {
                   labelText: 'Senha:', labelStyle: AppStyles.bodySmallBold),
               obscureText: true,
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                  labelText: 'Confirme a senha:',
-                  labelStyle: AppStyles.bodySmallBold),
-              obscureText: true,
-            ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: BlocBuilder<CreateAccountCubit, CreateAccountState>(
-                bloc: getIt<CreateAccountCubit>(),
+              child: BlocConsumer<CreateAccountCubit, CreateAccountState>(
+                listener: (context, state) async {
+                  if (state is CreateAccountSuccess) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginScreen(
+                                authCubit: locator.getIt(),
+                              )),
+                    );
+                  }
+                },
+                bloc: widget.createAccountCubit,
                 builder: (context, state) {
                   return ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -69,7 +81,7 @@ class RegisterPage extends StatelessWidget {
                       final email = _emailController.text;
                       final password = _passwordController.text;
 
-                      getIt<CreateAccountCubit>().createAccount(
+                      widget.createAccountCubit.createAccount(
                           createAccountRequest: CreateAccountRequest(
                               name: name,
                               email: email,
@@ -79,7 +91,7 @@ class RegisterPage extends StatelessWidget {
                             Roles(id: 2, roleName: "ROLE_ADMIN")
                           ]));
                     },
-                    child: state is AuthLoading
+                    child: state is CreateAccountLoading
                         ? const SizedBox(
                             height: 25,
                             width: 25,
@@ -109,7 +121,10 @@ class RegisterPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                              authCubit: locator.getIt(),
+                            )),
                   );
                 },
                 child: Text(

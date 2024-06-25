@@ -4,6 +4,6 @@ class UserModel {
   UserModel({required this.token});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(token: json['token']);
+    return UserModel(token: json['access_token']);
   }
 }

@@ -17,8 +17,8 @@ class CreateAccountCubit extends Cubit<CreateAccountState> {
 
     result.fold(
       (DioException dioException) =>
-          const CreateAccountFailure('Create Account failed'),
-      (bool success) => CreateAccountSuccess(success),
+          emit(const CreateAccountFailure('Create Account failed')),
+      (bool success) => emit(CreateAccountSuccess(success)),
     );
   }
 }

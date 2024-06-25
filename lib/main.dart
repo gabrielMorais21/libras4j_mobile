@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:libras4j/consts/colors.dart';
 import 'package:libras4j/presentation/pages/login/login_page.dart';
-import 'locator.dart';
+import 'locator.dart' as locator;
 
 void main() {
-  setupLocator();
+  locator.setupLocator();
   runApp(const MyApp());
 }
 
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       title: 'Flutter Demo',
-      home: LoginScreen(),
+      home: LoginScreen(authCubit: locator.getIt()),
     );
   }
 }

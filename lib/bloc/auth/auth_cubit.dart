@@ -17,8 +17,8 @@ class AuthCubit extends Cubit<AuthState> {
     final result = await _authRepository.login(loginRequest);
 
     result.fold(
-      (DioException dioException) => const AuthFailure('Login failed'),
-      (UserModel userModel) => AuthSuccess(userModel),
+      (DioException dioException) => emit(const AuthFailure('Login failed')),
+      (UserModel userModel) => emit(AuthSuccess(userModel)),
     );
   }
 }
